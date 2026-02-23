@@ -3,19 +3,19 @@ import pandas as pd
 import numpy as np
 import math
 
-st.set_page_config(page_title="ID3 Decision Tree", layout="centered")
-st.title("🌳 ID3 Decision Tree Classifier")
+st.set_page_config(page_title="ID3 Decision Tree - Movie Predictor", layout="centered")
+st.title("🎬 ID3 Decision Tree - Movie Watch Predictor")
 
+# New Dataset
 data = pd.DataFrame({
-    "Outlook": ["Sunny","Sunny","Overcast","Rain","Rain","Rain",
-                "Overcast","Sunny","Sunny","Rain","Sunny","Overcast",
-                "Overcast","Rain"],
-    "Humidity": ["High","High","High","High","Normal","Normal",
-                 "Normal","High","Normal","High","Normal","High",
-                 "Normal","High"],
-    "PlayTennis": ["No","No","Yes","Yes","No","Yes",
-                    "Yes","No","Yes","Yes","Yes","Yes",
-                    "Yes","No"]
+    "Weather": ["Sunny","Sunny","Rainy","Cloudy","Rainy","Sunny",
+                "Cloudy","Rainy","Sunny","Cloudy","Rainy","Sunny"],
+    
+    "FreeTime": ["No","Yes","Yes","Yes","No","Yes",
+                 "Yes","No","Yes","Yes","Yes","No"],
+    
+    "WatchMovie": ["No","Yes","Yes","Yes","No","Yes",
+                   "Yes","No","Yes","Yes","Yes","No"]
 })
 
 st.subheader("📊 Training Dataset")
@@ -51,24 +51,24 @@ def predict(tree, sample):
     return predict(tree[key][sample[key]], sample)
 
 if st.button("Generate Decision Tree"):
-    tree = id3(data, "PlayTennis", ["Outlook","Humidity"])
+    tree = id3(data, "WatchMovie", ["Weather","FreeTime"])
     st.session_state.tree = tree
-    st.subheader("🌲 Generated Decision Tree")
+    st.subheader("🌳 Generated Decision Tree")
     st.json(tree)
 
 if "tree" in st.session_state:
-    st.subheader("🔮 Prediction")
-    o = st.selectbox("Outlook", data["Outlook"].unique())
-    h = st.selectbox("Humidity", data["Humidity"].unique())
+    st.subheader("🔮 Prediction Section")
+    w = st.selectbox("Weather", data["Weather"].unique())
+    f = st.selectbox("Free Time Available?", data["FreeTime"].unique())
 
     if st.button("Predict"):
-        result = predict(st.session_state.tree, {"Outlook": o, "Humidity": h})
+        result = predict(st.session_state.tree, {"Weather": w, "FreeTime": f})
 
         result_df = pd.DataFrame({
-            "Outlook": [o],
-            "Humidity": [h],
-            "PlayTennis": [result]
+            "Weather": [w],
+            "FreeTime": [f],
+            "WatchMovie": [result]
         })
 
         st.table(result_df)
-        st.success(f"Prediction Result: {result}")
+        st.success(f"🎯 Prediction Result: {result}")
